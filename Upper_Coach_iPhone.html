@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#090c12">
+<title>UPPER — Workout Coach</title>
+<style>
+:root{--bg:#090c12;--panel:#121722;--panel2:#191f2b;--line:#293241;--text:#f7f8fb;--muted:#8d98aa;--green:#b8ff67;--green2:#8de63b;--red:#ff7187}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{padding-bottom:88px}button,input{font:inherit}button{cursor:pointer}
+.top{padding:calc(18px + env(safe-area-inset-top)) 18px 16px;position:sticky;top:0;z-index:10;background:rgba(9,12,18,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.05)}
+.brand{font-weight:900;letter-spacing:.12em;font-size:13px;color:var(--green)}.hello{font-size:29px;font-weight:900;margin-top:5px}.date{color:var(--muted);font-size:13px;margin-top:3px}
+.wrap{max-width:720px;margin:auto;padding:16px}
+.hero{border-radius:24px;padding:22px;background:linear-gradient(145deg,#182117,#111720);border:1px solid #273528}
+.hero small{color:var(--green);font-weight:800;letter-spacing:.08em}.hero h1{font-size:30px;line-height:1.05;margin:8px 0}.hero p{color:var(--muted);margin:0 0 18px}
+.bigbtn{width:100%;border:0;border-radius:16px;padding:15px;background:var(--green);color:#0b1107;font-weight:900;font-size:17px}
+.section{margin-top:18px}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.sectionhead h2{font-size:18px;margin:0}.link{background:none;border:0;color:var(--green);font-weight:800;font-size:13px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.wd{border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:9px 2px;text-align:center;color:var(--muted);font-size:11px}.wd strong{display:block;color:var(--text);font-size:14px;margin-top:4px}.wd.active{border-color:var(--green);background:#192414}.wd.active strong{color:var(--green)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:15px;margin-top:10px}.exercise{padding:15px 0;border-top:1px solid var(--line)}.exercise:first-child{border-top:0;padding-top:0}.exrow{display:flex;justify-content:space-between;gap:10px}.exname{font-weight:850}.presc{font-size:12px;color:var(--green);font-weight:800;white-space:nowrap}
+.meta{font-size:12px;color:var(--muted);margin-top:4px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}label{font-size:11px;color:var(--muted)}input{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:11px;padding:11px 10px;margin-top:4px;outline:none}input:focus{border-color:var(--green)}
+.sets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.set{background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12px}.set.done{background:var(--green);border-color:var(--green);color:#0a1006;font-weight:900}
+.timer{display:flex;align-items:center;justify-content:space-between;gap:10px}.timer strong{font-size:27px;font-variant-numeric:tabular-nums}.timer button{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:var(--panel2);border-radius:13px;padding:13px;text-align:center}.stat b{font-size:20px}.stat span{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:20;padding:9px 16px calc(9px + env(safe-area-inset-bottom));background:rgba(9,12,18,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:center}.bottomin{width:min(720px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.nav{background:none;border:0;color:var(--muted);padding:8px 2px;font-size:11px}.nav.active{color:var(--green);font-weight:900}
+.rest{text-align:center;padding:30px 10px}.rest .emoji{font-size:45px}.muted{color:var(--muted)}.notice{font-size:12px;line-height:1.5;color:var(--muted)}
+.hidden{display:none!important}
+@media(min-width:600px){.wrap{padding:22px}.hero h1{font-size:38px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">UPPER / COACH</div><div class="hello">Dein Training.</div><div class="date" id="today"></div></header>
+<main class="wrap" id="root"></main>
+<nav class="bottom"><div class="bottomin">
+<button class="nav active" id="nToday" onclick="show('today')">🏠<br>Heute</button>
+<button class="nav" id="nPlan" onclick="show('plan')">🏋️<br>Plan</button>
+<button class="nav" id="nProgress" onclick="show('progress')">📈<br>Fortschritt</button>
+</div></nav>
+<script>
+const P={
+1:{title:"PUSH",focus:"Brust · Schulter · Trizeps",ex:[["Bankdrücken","4","6–8"],["Schrägbank-Kurzhanteldrücken","3","8–10"],["Kabel-Flys","3","10–15"],["Dips","3","8–12"],["Trizepsdrücken am Kabel","3","10–15"],["Overhead-Trizeps am Kabel","2","10–15"]]},
+2:{title:"PULL",focus:"Rücken · hintere Schulter · Bizeps",ex:[["Klimmzüge / Latzug","4","6–10"],["Rudern","4","8–10"],["Latzug eng / neutral","3","10–12"],["Reverse Flys","3","12–15"],["Bizepscurls","3","8–12"],["Hammer Curls","3","10–12"]]},
+4:{title:"SHOULDERS + CHEST",focus:"Schultern · obere Brust · Trizeps",ex:[["Schulterdrücken","4","6–10"],["Schrägbankdrücken","3","8–10"],["Seitheben","4","12–20"],["Kabel-Flys","3","10–15"],["Reverse Flys","3","12–20"],["Trizepsdrücken","3","10–15"]]},
+5:{title:"BACK + ARMS",focus:"Rücken · Bizeps · Trizeps",ex:[["Klimmzüge / Latzug","4","8–10"],["Rudern","4","8–12"],["Straight-Arm Pulldown","3","10–15"],["Face Pulls","3","12–20"],["Bizepscurls","3","8–12"],["Hammer Curls","3","10–12"],["Trizepsdrücken","3","10–15"]]},
+0:{title:"UPPER BODY",focus:"Kompletter Oberkörper · Fokus auf Progression",ex:[["Bankdrücken","3","6–8"],["Latzug / Klimmzüge","3","8–10"],["Schrägbankdrücken","3","8–12"],["Rudern","3","8–12"],["Schulterdrücken","3","8–10"],["Seitheben","4","12–20"],["Bizepscurls","2","10–15"],["Trizeps","2","10–15"]]}
+};
+const names={0:"So",1:"Mo",2:"Di",3:"Mi",4:"Do",5:"Fr",6:"Sa"}, long={0:"Sonntag",1:"Montag",2:"Dienstag",3:"Mittwoch",4:"Donnerstag",5:"Freitag",6:"Samstag"};
+let day=new Date().getDay(), page="today", timer=90, int=null;
+const D=()=>new Date().toISOString().slice(0,10);
+const K=(d,i,x)=>`upper_${D()}_${d}_${i}_${x}`;
+const get=k=>localStorage.getItem(k)||"";
+const set=(k,v)=>localStorage.setItem(k,v);
+document.getElementById("today").textContent=new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"});
+function render(){let r=document.getElementById("root"); if(page==="today")today(r); else if(page==="plan")plan(r); else progress(r)}
+function week(){return `<div class="section"><div class="sectionhead"><h2>Deine Woche</h2></div><div class="week">${[1,2,3,4,5,6,0].map(d=>`<button class="wd ${d===day?'active':''}" onclick="day=${d};page='today';render()">${names[d]}<strong>${P[d]?'●':'—'}</strong></button>`).join("")}</div></div>`}
+function today(r){
+let p=P[day];
+r.innerHTML=week();
+if(!p){r.innerHTML+=`<div class="card rest"><div class="emoji">😴</div><h2>REST DAY</h2><p class="muted">Erholung ist Teil des Muskelaufbaus. Locker bewegen, gut essen, gut schlafen.</p></div>${timerBox()}`;return}
+let done=+get(`done_${D()}_${day}`)||0;
+r.innerHTML+=`<section class="hero"><small>HEUTE · ${long[day].toUpperCase()}</small><h1>${p.title}</h1><p>${p.focus}</p><button class="bigbtn" onclick="document.getElementById('workout').scrollIntoView({behavior:'smooth'})">TRAINING STARTEN →</button></section>
+<div class="section" id="workout"><div class="sectionhead"><h2>Dein Workout</h2><span class="muted">${done}/${p.ex.reduce((a,e)=>a+Number(e[1]),0)} Sätze</span></div><div class="card">${p.ex.map((e,i)=>exercise(e,i)).join("")}<button class="bigbtn" onclick="finish()">✓ TRAINING ABSCHLIESSEN</button></div></div>${timerBox()}<div class="card notice"><b>Progression:</b> Wenn du bei allen Sätzen das obere Ende des Bereichs sauber erreichst, erhöhe beim nächsten Training das Gewicht leicht. Meist 1–2 Wiederholungen „im Tank“ lassen.</div>`;
+}
+function exercise(e,i){let w=get(K(day,i,"w")), rr=get(K(day,i,"r"));let buttons="";for(let s=0;s<+e[1];s++){let k=K(day,i,"s"+s),d=get(k);buttons+=`<button class="set ${d?'done':''}" onclick="toggleSet('${k}',this)">Satz ${s+1}</button>`}
+return `<div class="exercise"><div class="exrow"><span class="exname">${i+1}. ${e[0]}</span><span class="presc">${e[1]} × ${e[2]}</span></div><div class="fields"><label>Gewicht (kg)<input type="number" step=".5" inputmode="decimal" value="${w}" onchange="set('${K(day,i,"w")}',this.value)"></label><label>Wdh. geschafft<input type="number" inputmode="numeric" value="${rr}" onchange="set('${K(day,i,"r")}',this.value)"></label></div><div class="sets">${buttons}</div></div>`}
+function toggleSet(k,b){set(k,b.classList.toggle("done")?"1":"");updateDone();b.blur()}
+function updateDone(){if(!P[day])return;let n=0;P[day].ex.forEach((e,i)=>{for(let s=0;s<+e[1];s++)n+=!!get(K(day,i,"s"+s))});set(`done_${D()}_${day}`,n);let old=page;render()}
+function timerBox(){return `<div class="section card timer"><div><div class="muted" style="font-size:11px">PAUSEN-TIMER</div><strong id="tm">${fmt(timer)}</strong></div><button onclick="start()">Start</button><button onclick="reset(90)">90s</button><button onclick="reset(120)">120s</button></div>`}
+function fmt(s){return String(Math.max(0,Math.floor(s/60))).padStart(2,"0")+":"+String(Math.max(0,s%60)).padStart(2,"0")}
+function reset(s){clearInterval(int);timer=s;let x=document.getElementById("tm");if(x)x.textContent=fmt(timer)}
+function start(){clearInterval(int);int=setInterval(()=>{timer--;let x=document.getElementById("tm");if(x)x.textContent=fmt(timer);if(timer<=0){clearInterval(int);navigator.vibrate?.([180,80,180]);}},1000)}
+function finish(){let n=+(localStorage.getItem("totalWorkouts")||0)+1;set("totalWorkouts",n);alert("Training gespeichert 💪");page="progress";render()}
+function plan(r){r.innerHTML=`<div class="hero"><small>5 TAGE / WOCHE</small><h1>Dein Oberkörper-Plan</h1><p>Mo · Di · Do · Fr · So. Mittwoch & Samstag sind Rest Days.</p></div>`+[1,2,4,5,0].map(d=>`<div class="card"><div class="exrow"><div><b>${long[d]} · ${P[d].title}</b><div class="meta">${P[d].focus}</div></div></div><div class="notice" style="margin-top:12px">${P[d].ex.map(e=>`${e[0]} — ${e[1]} × ${e[2]}`).join("<br>")}</div></div>`).join("")}
+function progress(r){let total=+(localStorage.getItem("totalWorkouts")||0), bw=get("bodyweight")||"68";r.innerHTML=`<div class="hero"><small>FORTSCHRITT</small><h1>Baue Masse auf.</h1><p>Dein Ziel: langsam zunehmen und dabei stärker werden.</p></div><div class="section"><div class="stats"><div class="stat"><b>${total}</b><span>Trainings</span></div><div class="stat"><b>${bw} kg</b><span>Gewicht</span></div><div class="stat"><b>1,84 m</b><span>Größe</span></div></div></div><div class="card"><h3>Körpergewicht</h3><p class="notice">Für Muskelaufbau ist ein langsamer Anstieg sinnvoll. Wiege dich regelmäßig unter ähnlichen Bedingungen.</p><label>Aktuelles Gewicht (kg)<input type="number" step=".1" value="${bw}" onchange="set('bodyweight',this.value);render()"></label></div><div class="card notice"><b>Ernährungs-Ziel:</b> ungefähr 110–150 g Protein pro Tag und zunächst etwa 200–300 kcal über deinem Erhalt. Ziel: ca. 0,2–0,4 kg Gewichtszunahme pro Woche.</div>`}
+function show(x){page=x;document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));document.getElementById(x==="today"?"nToday":x==="plan"?"nPlan":"nProgress").classList.add("active");render()}
+render();
+</script>
+</body>
+</html>
